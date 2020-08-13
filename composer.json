@@ -1,0 +1,25 @@
+{
+    "name": "husseinferas/laraimage",
+    "license": "MIT",
+    "keywords": ["laravel","media","image","laraimage","imageable"],
+    "authors": [
+        {
+            "name": "Hussein Feras",
+            "email": "husseinferas12@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HusseinFeras\\Laraimage\\LaraimageServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "HusseinFeras\\Laraimage\\": "src/"
+        }
+    }
+}
