@@ -21,7 +21,6 @@ trait MultiColumnSingleImage
     {
         $disk = config('laraimage.disk');
         $filename = (is_null($filename) ? Str::random() : $filename) . ".".request()->file($requestKey)->getClientOriginalExtension();
-
         $store = Storage::disk($disk)->putFileAs($path, request()->file($requestKey),$filename);
         $this->update([
             $imageColumn => [
@@ -35,7 +34,7 @@ trait MultiColumnSingleImage
     {
         if (!is_null($this->$imageColumn)) {
             Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
-            $this->imageColumn = null;
+            $this->update([$imageColumn => null]);
         }
     }
 
@@ -49,7 +48,11 @@ trait MultiColumnSingleImage
 
     public function getImage($imageColumn)
     {
-        return Storage::disk($imageColumn['disk'])->url($imageColumn['path']);
+        if (is_array($this->$imageColumn)) {
+            return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
+        } else {
+            return config('laraimage.default_image',null);
+        }
     }
 
     /**
