@@ -36,7 +36,7 @@ trait SingleColumnSingleImage
     {
         $column = $this->imageColumn;
         Storage::disk($this->$column['disk'])->delete($this->$column['path']);
-        $this->imageColumn = null;
+        $this->update([$column => null]);
     }
 
 
