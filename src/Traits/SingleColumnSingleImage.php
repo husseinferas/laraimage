@@ -35,7 +35,9 @@ trait SingleColumnSingleImage
     public function deleteImage()
     {
         $column = $this->imageColumn;
-        Storage::disk($this->$column['disk'])->delete($this->$column['path']);
+        if (isset($this->$column['disk'])) {
+            Storage::disk($this->$column['disk'])->delete($this->$column['path']);
+        }
         $this->update([$column => null]);
     }
 
@@ -43,9 +45,9 @@ trait SingleColumnSingleImage
     public function getImage()
     {
         $imageColumn = $this->imageColumn;
-        if (is_string($this->imageColumn)) {
+        try {
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
-        } else {
+        } catch (\Exception $exception){
             return config('laraimage.default_image',null);
         }
     }
