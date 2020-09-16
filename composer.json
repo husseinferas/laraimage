@@ -9,7 +9,7 @@
             "email": "husseinferas12@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "extra": {
         "laravel": {
             "providers": [
@@ -21,5 +21,13 @@
         "psr-4": {
             "HusseinFeras\\Laraimage\\": "src/"
         }
+    },
+    "require": {
+        "php": ">=7.3",
+        "laravel/framework": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "mockery/mockery": "^1.3"
     }
 }

@@ -46,6 +46,9 @@ trait SingleColumnSingleImage
     {
         $imageColumn = $this->imageColumn;
         try {
+            if (is_null($imageColumn)) {
+                return config('laraimage.default_image',null);
+            }
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
         } catch (\Exception $exception){
             return config('laraimage.default_image',null);
