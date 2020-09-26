@@ -4,7 +4,6 @@
 namespace HusseinFeras\Laraimage\Traits;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 trait SingleColumnSingleImage
 {
@@ -18,12 +17,13 @@ trait SingleColumnSingleImage
     }
 
 
-    public function addImage($path,$requestKey,$filename = null)
+    public function addImage($requestKey)
     {
-        $disk = config('laraimage.disk');
-        $filename = (is_null($filename) ? Str::random() : $filename) . ".".request()->file($requestKey)->getClientOriginalExtension();
+        $disk = config('laraimage.disk','public');
+        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
+        $filename = (string)rand() .".". request()->$requestKey->extension();
 
-        $store = Storage::disk($disk)->putFileAs($path, request()->file($requestKey),$filename);
+        $store = Storage::disk($disk)->putFileAs($path, request()->$requestKey,$filename);
         $this->update([
             $this->imageColumn => [
                 'disk' => $disk,
@@ -32,13 +32,16 @@ trait SingleColumnSingleImage
         ]);
     }
 
+
     public function deleteImage()
     {
-        $column = $this->imageColumn;
-        if (isset($this->$column['disk'])) {
-            Storage::disk($this->$column['disk'])->delete($this->$column['path']);
+        $imageColumn = $this->imageColumn;
+        try {
+            Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
+            $this->update([$imageColumn => null]);
+        } catch (\Exception $exception) {
+            return false;
         }
-        $this->update([$column => null]);
     }
 
 
@@ -46,9 +49,6 @@ trait SingleColumnSingleImage
     {
         $imageColumn = $this->imageColumn;
         try {
-            if (!isset($this->$imageColumn['disk'])) {
-                return config('laraimage.default_image',null);
-            }
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
         } catch (\Exception $exception){
             return config('laraimage.default_image',null);

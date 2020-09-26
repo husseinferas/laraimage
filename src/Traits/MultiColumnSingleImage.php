@@ -17,11 +17,13 @@ trait MultiColumnSingleImage
         });
     }
 
-    public function addImage($imageColumn,$path,$requestKey,$filename = null)
+    public function addImage($imageColumn,$requestKey)
     {
-        $disk = config('laraimage.disk');
-        $filename = (is_null($filename) ? Str::random() : $filename) . ".".request()->file($requestKey)->getClientOriginalExtension();
-        $store = Storage::disk($disk)->putFileAs($path, request()->file($requestKey),$filename);
+        $disk = config('laraimage.disk','public');
+        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
+        $filename = (string)rand() .".". request()->$requestKey->extension();
+
+        $store = Storage::disk($disk)->putFileAs($path, request()->$requestKey,$filename);
         $this->update([
             $imageColumn => [
                 'disk' => $disk,
@@ -32,9 +34,11 @@ trait MultiColumnSingleImage
 
     public function deleteImage($imageColumn)
     {
-        if (!is_null($this->$imageColumn)) {
+        try {
             Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
             $this->update([$imageColumn => null]);
+        } catch (\Exception $exception) {
+            return false;
         }
     }
 
@@ -48,9 +52,9 @@ trait MultiColumnSingleImage
 
     public function getImage($imageColumn)
     {
-        if (is_array($this->$imageColumn)) {
+        try {
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
-        } else {
+        } catch (\Exception $exception){
             return config('laraimage.default_image',null);
         }
     }
