@@ -4,11 +4,12 @@ namespace Illuminate\Database;
 
 use Closure;
 use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
-use Exception;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 use Illuminate\Database\Schema\SqlServerBuilder;
+use Illuminate\Filesystem\Filesystem;
+use RuntimeException;
 use Throwable;
 
 class SqlServerConnection extends Connection
@@ -20,7 +21,7 @@ class SqlServerConnection extends Connection
      * @param  int  $attempts
      * @return mixed
      *
-     * @throws \Exception|\Throwable
+     * @throws \Throwable
      */
     public function transaction(Closure $callback, $attempts = 1)
     {
@@ -43,11 +44,7 @@ class SqlServerConnection extends Connection
             // If we catch an exception, we will roll back so nothing gets messed
             // up in the database. Then we'll re-throw the exception so it can
             // be handled how the developer sees fit for their applications.
-            catch (Exception $e) {
-                $this->getPdo()->exec('ROLLBACK TRAN');
-
-                throw $e;
-            } catch (Throwable $e) {
+            catch (Throwable $e) {
                 $this->getPdo()->exec('ROLLBACK TRAN');
 
                 throw $e;
@@ -89,6 +86,19 @@ class SqlServerConnection extends Connection
     protected function getDefaultSchemaGrammar()
     {
         return $this->withTablePrefix(new SchemaGrammar);
+    }
+
+    /**
+     * Get the schema state for the connection.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem|null  $files
+     * @param  callable|null  $processFactory
+     *
+     * @throws \RuntimeException
+     */
+    public function getSchemaState(Filesystem $files = null, callable $processFactory = null)
+    {
+        throw new RuntimeException('Schema dumping is not supported when using SQL Server.');
     }
 
     /**

@@ -48,7 +48,7 @@ class Store implements StoreInterface
     {
         // unlock everything
         foreach ($this->locks as $lock) {
-            flock($lock, \LOCK_UN);
+            flock($lock, LOCK_UN);
             fclose($lock);
         }
 
@@ -70,7 +70,7 @@ class Store implements StoreInterface
                 return $path;
             }
             $h = fopen($path, 'cb');
-            if (!flock($h, \LOCK_EX | \LOCK_NB)) {
+            if (!flock($h, LOCK_EX | LOCK_NB)) {
                 fclose($h);
 
                 return $path;
@@ -92,7 +92,7 @@ class Store implements StoreInterface
         $key = $this->getCacheKey($request);
 
         if (isset($this->locks[$key])) {
-            flock($this->locks[$key], \LOCK_UN);
+            flock($this->locks[$key], LOCK_UN);
             fclose($this->locks[$key]);
             unset($this->locks[$key]);
 
@@ -115,8 +115,8 @@ class Store implements StoreInterface
         }
 
         $h = fopen($path, 'rb');
-        flock($h, \LOCK_EX | \LOCK_NB, $wouldBlock);
-        flock($h, \LOCK_UN); // release the lock we just acquired
+        flock($h, LOCK_EX | LOCK_NB, $wouldBlock);
+        flock($h, LOCK_UN); // release the lock we just acquired
         fclose($h);
 
         return (bool) $wouldBlock;
@@ -207,7 +207,7 @@ class Store implements StoreInterface
                 $entry[1]['vary'] = [''];
             }
 
-            if ($entry[1]['vary'][0] != $vary || !$this->requestsMatch($vary, $entry[0], $storedEnv)) {
+            if ($entry[1]['vary'][0] != $vary || !$this->requestsMatch($vary ?? '', $entry[0], $storedEnv)) {
                 $entries[] = $entry;
             }
         }
@@ -265,9 +265,9 @@ class Store implements StoreInterface
      * Determines whether two Request HTTP header sets are non-varying based on
      * the vary response header value provided.
      *
-     * @param string $vary A Response vary header
-     * @param array  $env1 A Request HTTP header array
-     * @param array  $env2 A Request HTTP header array
+     * @param string|null $vary A Response vary header
+     * @param array       $env1 A Request HTTP header array
+     * @param array       $env2 A Request HTTP header array
      */
     private function requestsMatch(?string $vary, array $env1, array $env2): bool
     {
@@ -306,11 +306,9 @@ class Store implements StoreInterface
      *
      * This method purges both the HTTP and the HTTPS version of the cache entry.
      *
-     * @param string $url A URL
-     *
      * @return bool true if the URL exists with either HTTP or HTTPS scheme and has been purged, false otherwise
      */
-    public function purge($url)
+    public function purge(string $url)
     {
         $http = preg_replace('#^https:#', 'http:', $url);
         $https = preg_replace('#^http:#', 'https:', $url);
@@ -328,7 +326,7 @@ class Store implements StoreInterface
     {
         $key = $this->getCacheKey(Request::create($url));
         if (isset($this->locks[$key])) {
-            flock($this->locks[$key], \LOCK_UN);
+            flock($this->locks[$key], LOCK_UN);
             fclose($this->locks[$key]);
             unset($this->locks[$key]);
         }
@@ -405,7 +403,7 @@ class Store implements StoreInterface
         return true;
     }
 
-    public function getPath($key)
+    public function getPath(string $key)
     {
         return $this->root.\DIRECTORY_SEPARATOR.substr($key, 0, 2).\DIRECTORY_SEPARATOR.substr($key, 2, 2).\DIRECTORY_SEPARATOR.substr($key, 4, 2).\DIRECTORY_SEPARATOR.substr($key, 6);
     }

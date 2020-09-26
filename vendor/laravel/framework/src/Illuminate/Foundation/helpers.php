@@ -12,14 +12,13 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\View\Factory as ViewFactory;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
+use Illuminate\Foundation\Bus\PendingClosureDispatch;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Foundation\Mix;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\HtmlString;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\HttpFoundation\Response;
 
 if (! function_exists('abort')) {
@@ -51,7 +50,7 @@ if (! function_exists('abort_if')) {
      * Throw an HttpException with the given data if the given condition is true.
      *
      * @param  bool  $boolean
-     * @param  int  $code
+     * @param  \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Support\Responsable|int  $code
      * @param  string  $message
      * @param  array  $headers
      * @return void
@@ -72,7 +71,7 @@ if (! function_exists('abort_unless')) {
      * Throw an HttpException with the given data unless the given condition is true.
      *
      * @param  bool  $boolean
-     * @param  int  $code
+     * @param  \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Support\Responsable|int  $code
      * @param  string  $message
      * @param  array  $headers
      * @return void
@@ -385,11 +384,9 @@ if (! function_exists('dispatch')) {
      */
     function dispatch($job)
     {
-        if ($job instanceof Closure) {
-            $job = CallQueuedClosure::create($job);
-        }
-
-        return new PendingDispatch($job);
+        return $job instanceof Closure
+                ? new PendingClosureDispatch(CallQueuedClosure::create($job))
+                : new PendingDispatch($job);
     }
 }
 
@@ -404,48 +401,6 @@ if (! function_exists('dispatch_now')) {
     function dispatch_now($job, $handler = null)
     {
         return app(Dispatcher::class)->dispatchNow($job, $handler);
-    }
-}
-
-if (! function_exists('elixir')) {
-    /**
-     * Get the path to a versioned Elixir file.
-     *
-     * @param  string  $file
-     * @param  string  $buildDirectory
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @deprecated Use Laravel Mix instead.
-     */
-    function elixir($file, $buildDirectory = 'build')
-    {
-        static $manifest = [];
-        static $manifestPath;
-
-        if (empty($manifest) || $manifestPath !== $buildDirectory) {
-            $path = public_path($buildDirectory.'/rev-manifest.json');
-
-            if (file_exists($path)) {
-                $manifest = json_decode(file_get_contents($path), true);
-                $manifestPath = $buildDirectory;
-            }
-        }
-
-        $file = ltrim($file, '/');
-
-        if (isset($manifest[$file])) {
-            return '/'.trim($buildDirectory.'/'.$manifest[$file], '/');
-        }
-
-        $unversioned = public_path($file);
-
-        if (file_exists($unversioned)) {
-            return '/'.trim($file, '/');
-        }
-
-        throw new InvalidArgumentException("File {$file} not defined in asset manifest.");
     }
 }
 
@@ -475,29 +430,6 @@ if (! function_exists('event')) {
     function event(...$args)
     {
         return app('events')->dispatch(...$args);
-    }
-}
-
-if (! function_exists('factory')) {
-    /**
-     * Create a model factory builder for a given class, name, and amount.
-     *
-     * @param  dynamic  class|class,name|class,amount|class,name,amount
-     * @return \Illuminate\Database\Eloquent\FactoryBuilder
-     */
-    function factory()
-    {
-        $factory = app(EloquentFactory::class);
-
-        $arguments = func_get_args();
-
-        if (isset($arguments[1]) && is_string($arguments[1])) {
-            return $factory->of($arguments[0], $arguments[1])->times($arguments[2] ?? null);
-        } elseif (isset($arguments[1])) {
-            return $factory->of($arguments[0])->times($arguments[1]);
-        }
-
-        return $factory->of($arguments[0]);
     }
 }
 
@@ -657,13 +589,8 @@ if (! function_exists('report')) {
      * @param  \Throwable  $exception
      * @return void
      */
-    function report($exception)
+    function report(Throwable $exception)
     {
-        if ($exception instanceof Throwable &&
-            ! $exception instanceof Exception) {
-            $exception = new FatalThrowableError($exception);
-        }
-
         app(ExceptionHandler::class)->report($exception);
     }
 }

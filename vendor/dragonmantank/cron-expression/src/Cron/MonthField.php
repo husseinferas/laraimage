@@ -1,34 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cron;
 
 use DateTimeInterface;
 
 /**
- * Month field.  Allows: * , / -
+ * Month field.  Allows: * , / -.
  */
 class MonthField extends AbstractField
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $rangeStart = 1;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $rangeEnd = 12;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $literals = [1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 6 => 'JUN', 7 => 'JUL',
-        8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 11 => 'NOV', 12 => 'DEC'];
+        8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 11 => 'NOV', 12 => 'DEC', ];
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function isSatisfiedBy(DateTimeInterface $date, $value)
+    public function isSatisfiedBy(DateTimeInterface $date, $value): bool
     {
         if ($value == '?') {
             return true;
@@ -36,7 +38,7 @@ class MonthField extends AbstractField
 
         $value = $this->convertLiterals($value);
 
-        return $this->isSatisfied($date->format('m'), $value);
+        return $this->isSatisfied((int) $date->format('m'), $value);
     }
 
     /**
@@ -44,7 +46,7 @@ class MonthField extends AbstractField
      *
      * @param \DateTime|\DateTimeImmutable &$date
      */
-    public function increment(DateTimeInterface &$date, $invert = false)
+    public function increment(DateTimeInterface &$date, $invert = false): FieldInterface
     {
         if ($invert) {
             $date = $date->modify('last day of previous month')->setTime(23, 59);
@@ -54,6 +56,4 @@ class MonthField extends AbstractField
 
         return $this;
     }
-
-
 }

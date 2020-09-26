@@ -102,11 +102,11 @@ class PackageManifest
             return $this->manifest;
         }
 
-        if (! file_exists($this->manifestPath)) {
+        if (! is_file($this->manifestPath)) {
             $this->build();
         }
 
-        return $this->manifest = file_exists($this->manifestPath) ?
+        return $this->manifest = is_file($this->manifestPath) ?
             $this->files->getRequire($this->manifestPath) : [];
     }
 
@@ -154,7 +154,7 @@ class PackageManifest
      */
     protected function packagesToIgnore()
     {
-        if (! file_exists($this->basePath.'/composer.json')) {
+        if (! is_file($this->basePath.'/composer.json')) {
             return [];
         }
 
@@ -173,8 +173,8 @@ class PackageManifest
      */
     protected function write(array $manifest)
     {
-        if (! is_writable(dirname($this->manifestPath))) {
-            throw new Exception('The '.dirname($this->manifestPath).' directory must be present and writable.');
+        if (! is_writable($dirname = dirname($this->manifestPath))) {
+            throw new Exception("The {$dirname} directory must be present and writable.");
         }
 
         $this->files->replace(

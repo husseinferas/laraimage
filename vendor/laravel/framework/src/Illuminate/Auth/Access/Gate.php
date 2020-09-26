@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -126,6 +127,10 @@ class Gate implements GateContract
      */
     public function define($ability, $callback)
     {
+        if (is_array($callback) && isset($callback[0]) && is_string($callback[0])) {
+            $callback = $callback[0].'@'.$callback[1];
+        }
+
         if (is_callable($callback)) {
             $this->abilities[$ability] = $callback;
         } elseif (is_string($callback)) {
@@ -595,7 +600,15 @@ class Gate implements GateContract
 
         $classDirname = str_replace('/', '\\', dirname(str_replace('\\', '/', $class)));
 
-        return [$classDirname.'\\Policies\\'.class_basename($class).'Policy'];
+        $classDirnameSegments = explode('\\', $classDirname);
+
+        return Arr::wrap(Collection::times(count($classDirnameSegments), function ($index) use ($class, $classDirnameSegments) {
+            $classDirname = implode('\\', array_slice($classDirnameSegments, 0, $index));
+
+            return $classDirname.'\\Policies\\'.class_basename($class).'Policy';
+        })->reverse()->values()->first(function ($class) {
+            return class_exists($class);
+        }) ?: [$classDirname.'\\Policies\\'.class_basename($class).'Policy']);
     }
 
     /**

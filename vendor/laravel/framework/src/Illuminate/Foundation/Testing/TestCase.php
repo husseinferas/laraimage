@@ -22,6 +22,8 @@ abstract class TestCase extends BaseTestCase
         Concerns\InteractsWithDatabase,
         Concerns\InteractsWithExceptionHandling,
         Concerns\InteractsWithSession,
+        Concerns\InteractsWithTime,
+        Concerns\InteractsWithViews,
         Concerns\MocksApplicationServices;
 
     /**
@@ -142,6 +144,8 @@ abstract class TestCase extends BaseTestCase
      * Clean up the testing environment before the next test.
      *
      * @return void
+     *
+     * @throws \Mockery\Exception\InvalidCountException
      */
     protected function tearDown(): void
     {

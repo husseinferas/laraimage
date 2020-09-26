@@ -27,12 +27,12 @@ class RefreshCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
     public function handle()
     {
         if (! $this->confirmToProceed()) {
-            return;
+            return 1;
         }
 
         // Next we'll gather some of the options so that we can have the right options
@@ -66,6 +66,8 @@ class RefreshCommand extends Command
         if ($this->needsSeeding()) {
             $this->runSeeder($database);
         }
+
+        return 0;
     }
 
     /**
@@ -124,7 +126,7 @@ class RefreshCommand extends Command
     {
         $this->call('db:seed', array_filter([
             '--database' => $database,
-            '--class' => $this->option('seeder') ?: 'DatabaseSeeder',
+            '--class' => $this->option('seeder') ?: 'Database\\Seeders\\DatabaseSeeder',
             '--force' => true,
         ]));
     }

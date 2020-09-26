@@ -27,12 +27,12 @@ class FreshCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
     public function handle()
     {
         if (! $this->confirmToProceed()) {
-            return;
+            return 1;
         }
 
         $database = $this->input->getOption('database');
@@ -48,6 +48,7 @@ class FreshCommand extends Command
             '--database' => $database,
             '--path' => $this->input->getOption('path'),
             '--realpath' => $this->input->getOption('realpath'),
+            '--schema-path' => $this->input->getOption('schema-path'),
             '--force' => true,
             '--step' => $this->option('step'),
         ]));
@@ -55,6 +56,8 @@ class FreshCommand extends Command
         if ($this->needsSeeding()) {
             $this->runSeeder($database);
         }
+
+        return 0;
     }
 
     /**
@@ -77,7 +80,7 @@ class FreshCommand extends Command
     {
         $this->call('db:seed', array_filter([
             '--database' => $database,
-            '--class' => $this->option('seeder') ?: 'DatabaseSeeder',
+            '--class' => $this->option('seeder') ?: 'Database\\Seeders\\DatabaseSeeder',
             '--force' => true,
         ]));
     }
@@ -96,6 +99,7 @@ class FreshCommand extends Command
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production'],
             ['path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The path(s) to the migrations files to be executed'],
             ['realpath', null, InputOption::VALUE_NONE, 'Indicate any provided migration file paths are pre-resolved absolute paths'],
+            ['schema-path', null, InputOption::VALUE_OPTIONAL, 'The path to a schema dump file'],
             ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run'],
             ['seeder', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder'],
             ['step', null, InputOption::VALUE_NONE, 'Force the migrations to be run so they can be rolled back individually'],

@@ -68,7 +68,7 @@ class LoadEnvironmentVariables
      */
     protected function setEnvironmentFilePath($app, $file)
     {
-        if (file_exists($app->environmentPath().'/'.$file)) {
+        if (is_file($app->environmentPath().'/'.$file)) {
             $app->loadEnvironmentFrom($file);
 
             return true;
@@ -86,9 +86,9 @@ class LoadEnvironmentVariables
     protected function createDotenv($app)
     {
         return Dotenv::create(
+            Env::getRepository(),
             $app->environmentPath(),
-            $app->environmentFile(),
-            Env::getFactory()
+            $app->environmentFile()
         );
     }
 

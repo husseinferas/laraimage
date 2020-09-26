@@ -208,8 +208,10 @@ class FilesystemManager implements FactoryContract
 
         $options = $config['options'] ?? [];
 
+        $streamReads = $config['stream_reads'] ?? false;
+
         return $this->adapt($this->createFlysystem(
-            new S3Adapter(new S3Client($s3Config), $s3Config['bucket'], $root, $options), $config
+            new S3Adapter(new S3Client($s3Config), $s3Config['bucket'], $root, $options, $streamReads), $config
         ));
     }
 
@@ -340,6 +342,19 @@ class FilesystemManager implements FactoryContract
         }
 
         return $this;
+    }
+
+    /**
+     * Disconnect the given disk and remove from local cache.
+     *
+     * @param  string|null  $name
+     * @return void
+     */
+    public function purge($name = null)
+    {
+        $name = $name ?? $this->getDefaultDriver();
+
+        unset($this->disks[$name]);
     }
 
     /**

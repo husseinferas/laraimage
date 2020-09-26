@@ -111,6 +111,19 @@ class RouteRegistrar
     }
 
     /**
+     * Route an API resource to a controller.
+     *
+     * @param  string  $name
+     * @param  string  $controller
+     * @param  array  $options
+     * @return \Illuminate\Routing\PendingResourceRegistration
+     */
+    public function apiResource($name, $controller, array $options = [])
+    {
+        return $this->router->apiResource($name, $controller, $this->attributes + $options);
+    }
+
+    /**
      * Create a route group with shared attributes.
      *
      * @param  \Closure|string  $callback
@@ -165,6 +178,15 @@ class RouteRegistrar
 
         if (is_string($action) || $action instanceof Closure) {
             $action = ['uses' => $action];
+        }
+
+        if (is_array($action) &&
+            is_callable($action) &&
+            ! Arr::isAssoc($action)) {
+            $action = [
+                'uses' => $action[0].'@'.$action[1],
+                'controller' => $action[0].'@'.$action[1],
+            ];
         }
 
         return array_merge($this->attributes, $action);

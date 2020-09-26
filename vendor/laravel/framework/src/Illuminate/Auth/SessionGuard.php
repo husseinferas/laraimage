@@ -199,7 +199,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
     /**
      * Get the ID for the currently authenticated user.
      *
-     * @return int|null
+     * @return int|string|null
      */
     public function id()
     {
@@ -518,6 +518,34 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
     }
 
     /**
+     * Log the user out of the application on their current device only.
+     *
+     * This method does not cycle the "remember" token.
+     *
+     * @return void
+     */
+    public function logoutCurrentDevice()
+    {
+        $user = $this->user();
+
+        $this->clearUserDataFromStorage();
+
+        // If we have an event dispatcher instance, we can fire off the logout event
+        // so any further processing can be done. This allows the developer to be
+        // listening for anytime a user signs out of this application manually.
+        if (isset($this->events)) {
+            $this->events->dispatch(new CurrentDeviceLogout($this->name, $user));
+        }
+
+        // Once we have fired the logout event we will clear the users out of memory
+        // so they are no longer available as the user is no longer considered as
+        // being signed into this application and should not be available here.
+        $this->user = null;
+
+        $this->loggedOut = true;
+    }
+
+    /**
      * Remove the user data from the session and cookies.
      *
      * @return void
@@ -543,32 +571,6 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
         $user->setRememberToken($token = Str::random(60));
 
         $this->provider->updateRememberToken($user, $token);
-    }
-
-    /**
-     * Log the user out of the application on their current device only.
-     *
-     * @return void
-     */
-    public function logoutCurrentDevice()
-    {
-        $user = $this->user();
-
-        $this->clearUserDataFromStorage();
-
-        // If we have an event dispatcher instance, we can fire off the logout event
-        // so any further processing can be done. This allows the developer to be
-        // listening for anytime a user signs out of this application manually.
-        if (isset($this->events)) {
-            $this->events->dispatch(new CurrentDeviceLogout($this->name, $user));
-        }
-
-        // Once we have fired the logout event we will clear the users out of memory
-        // so they are no longer available as the user is no longer considered as
-        // being signed into this application and should not be available here.
-        $this->user = null;
-
-        $this->loggedOut = true;
     }
 
     /**
@@ -632,7 +634,8 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
     /**
      * Fires the validated event if the dispatcher is set.
      *
-     * @param $user
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return void
      */
     protected function fireValidatedEvent($user)
     {
