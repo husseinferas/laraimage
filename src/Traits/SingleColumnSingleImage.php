@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Storage;
 trait SingleColumnSingleImage
 {
 
+    /*
+     * listen to the deleting event in the model
+     * and delete the image with all the files before delete the model itself
+    */
     public static function boot()
     {
         parent::boot();
@@ -16,8 +20,12 @@ trait SingleColumnSingleImage
         });
     }
 
-
-    public function addImage($requestKey)
+    /*
+     * add new image using the request key
+     *
+     * @param  string  $requestKey
+    */
+    public function addImage(string $requestKey) : void
     {
         $disk = config('laraimage.disk','public');
         $path = $this->imagesPath() ?? config('laraimage.default_path','images');
@@ -32,19 +40,28 @@ trait SingleColumnSingleImage
         ]);
     }
 
-
-    public function deleteImage()
+    /*
+     * delete the image
+     *
+     * @return  boolean
+    */
+    public function deleteImage(): bool
     {
         $imageColumn = $this->imageColumn;
         try {
             Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
             $this->update([$imageColumn => null]);
+            return true;
         } catch (\Exception $exception) {
             return false;
         }
     }
 
-
+    /*
+     * get the image url
+     *
+     * @return  string image url | default image
+    */
     public function getImage()
     {
         $imageColumn = $this->imageColumn;

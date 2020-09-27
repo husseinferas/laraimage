@@ -30,11 +30,6 @@ class LaraimageServiceProvider extends ServiceProvider
         $this->publishes([ $configPath => $publishPath ], 'config');
     }
 
-    public function registerPublishCommand()
-    {
-
-    }
-
     /**
      * Bootstrap services.
      *

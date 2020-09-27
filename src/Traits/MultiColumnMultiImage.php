@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Storage;
 trait MultiColumnMultiImage
 {
 
+    /*
+    * listen to the deleting event in the model
+    * and delete all the images with all the files before delete the model itself
+   */
     public static function boot()
     {
         parent::boot();
@@ -16,10 +20,18 @@ trait MultiColumnMultiImage
         });
     }
 
+    /*
+      * add new image using the request key and specifying the column
+     * the $append flag decide with you want to overwrite the existing images in the database or append to them
+     *
+     * @param  string  $requestKey
+     * @param  string  $imageColumn
+     * @param  bool  $append
+     */
     public function addImages($imagesColumn,$requestKey,$append = false)
     {
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? 'laraimage';
+        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $images = [];
 
         if (empty($append)) //add new images
@@ -54,34 +66,54 @@ trait MultiColumnMultiImage
     }
 
 
-
-    public function deleteImages($imagesColumn,$id = null)
+    /*
+     * delete images by specifying the column
+     * if $id is null this function will delete all the images in the images column
+     * if $id is the value of id of an image then this image only will delete
+     *
+     * @param  integer  $id
+     * @return  boolean
+    */
+    public function deleteImages($imagesColumn,$id = null): bool
     {
         if (empty($this->$imagesColumn) || is_null($this->$imagesColumn)) return false;
 
         if (empty($id)) //delete all images
         {
-            foreach ($this->$imagesColumn as $image) {
-                Storage::disk($image['disk'])->delete($image['path']);
+            try {
+                foreach ($this->$imagesColumn as $image) {
+                    Storage::disk($image['disk'])->delete($image['path']);
+                }
+                $this->update([$imagesColumn => null ]);
+                return true;
+            } catch (\Exception $exception) {
+                return false;
             }
-            $this->update([$imagesColumn => null ]);
         }
         else //delete single by id
         {
-            $keep = [];
-            foreach ($this->$imagesColumn as $image)
-            {
-                if ($image['id'] == $id) {
-                    Storage::disk($image['disk'])->delete($image['path']);
-                } else {
-                    $keep[] = $image;
+            try {
+                $keep = [];
+                foreach ($this->$imagesColumn as $image)
+                {
+                    if ($image['id'] == $id) {
+                        Storage::disk($image['disk'])->delete($image['path']);
+                    } else {
+                        $keep[] = $image;
+                    }
                 }
+                $this->update([$imagesColumn => empty($keep) ? null : $keep ]);
+                return true;
+            } catch (\Exception $exception) {
+                return false;
             }
-            $this->update([$imagesColumn => empty($keep) ? null : $keep ]);
         }
     }
 
-
+    /*
+     * delete all images in all image columns
+     *
+    */
     public function deleteAllImages()
     {
         foreach ($this->getImagesColumns() as $imagesColumn) {
@@ -89,15 +121,18 @@ trait MultiColumnMultiImage
         }
     }
 
-
-
-    public function getImages($imagesColumn)
+    /*
+     * get the images urls
+     *
+     * @return  array  images url | default image
+    */
+    public function getImages($imagesColumn): array
     {
         $urls = [];
         try {
             foreach ($this->$imagesColumn as $image)
             {
-                if (!isset($image['disk'])) {
+                if (!isset($image['disk']) || !isset($image['path'])) {
                     $urls[] = config('laraimage.default_image',null);
                 } else {
                     $urls[] = Storage::disk($image['disk'])->url($image['path']);
@@ -105,7 +140,7 @@ trait MultiColumnMultiImage
             }
             return $urls;
         } catch (\Exception $exception) {
-            return config('laraimage.default_image', null);
+            return [config('laraimage.default_image', null)];
         }
     }
 
