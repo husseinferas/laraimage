@@ -36,11 +36,11 @@ Laraimage served four use cases when using images in web applications and backen
 
 which appearing in this diagram:   
 
-![Laraimage Table](assets/laraimage_table.png?classes=400,200,shadow)
+<img src="assets/laraimage_table.png" width="400" alt="Laraimage diagram">
 
 ## Usage
 
-##### Single Column Single Image
+#### Single Column Single Image
 
 For example Category Model
 * you need to add a nullable json column for your model
@@ -49,7 +49,7 @@ For example Category Model
 php artisan make:migration add_image_to_categories_table 
 ```
 
-Inside the migration file:
+* the migration file:
 ```php
     /**
      * Run the migrations.
