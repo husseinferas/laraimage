@@ -22,6 +22,11 @@
             "HusseinFeras\\Laraimage\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "HusseinFeras\\Laraimage\\Test\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=7.3",
         "laravel/framework": ">=6.0"
