@@ -299,7 +299,7 @@ This Trait `MultiColumnSingleImage` adds these functions that used in controller
        * delete all images in all image columns
        *
       */
-      public function deleteAllImages(): void
+      public function deleteAllImages(): void {}
 
       /*
        * get the image url by specifying the column
@@ -312,6 +312,109 @@ This Trait `MultiColumnSingleImage` adds these functions that used in controller
 ```
 
 **Note:** when you delete the model using `delete()` method this trait will listen to the deleting event and delete the images files automatically
+
+
+
+### Multi Column Multi Image
+
+For example Post Model
+* you need to add tow or more nullable json columns for your model
+
+```bash
+php artisan make:migration add_images_to_posts_table 
+```
+
+* the migration file:
+```php
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->json('slider')->nullable();
+            $table->json('images')->nullable();
+        });
+    }
+```
+
+* Inside the model class:
+
+```php
+<?php
+
+namespace App;
+
+use HusseinFeras\Laraimage\Traits\MultiColumnMultiImage;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use MultiColumnMultiImage;
+    /*
+     * this is the name of your image's columns in the database
+    */
+    protected $imageColumns = ['slider','images'];
+       /*
+        * add your image column in the casts array
+       */
+       protected $casts = [
+        'slider' => 'json',
+        'images' =>  'json',
+       ];
+   
+       /*
+        * the storage path your the images will stored
+       */
+       public function imagesPath()
+       {
+           return 'posts/images/'.$this->id;
+       }
+}
+```
+
+This Trait `MultiColumnMultiImage` adds these functions that used in controller methods:
+```php
+    
+    /*
+      * add new image using the request key and specifying the column
+     * the $append flag decide with you want to overwrite the existing images in the database or append to them
+     *
+     * @param  string  $requestKey
+     * @param  string  $imageColumn
+     * @param  bool  $append
+     */
+    public function addImages($imagesColumn,$requestKey,$append = false) {}
+
+     /*
+      * delete images by specifying the column
+      * if $id is null this function will delete all the images in the images column
+      * if $id is the value of id of an image then this image only will delete
+      *
+      * @param  integer  $id
+      * @return  boolean
+     */
+     public function deleteImages($imagesColumn,$id = null): bool {}
+
+      /*
+      * delete all images in all image columns
+      *
+     */
+     public function deleteAllImages(): void {}
+      
+     /*
+      * get the images urls
+      *
+      * @return  array  images url | default image
+     */
+     public function getImages($imagesColumn): array {}
+
+```
+
+**Note:** when you delete the model using `delete()` method this trait will listen to the deleting event and delete the images files automatically
+
 
 
 ## Configuration

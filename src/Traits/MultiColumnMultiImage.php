@@ -114,7 +114,7 @@ trait MultiColumnMultiImage
      * delete all images in all image columns
      *
     */
-    public function deleteAllImages()
+    public function deleteAllImages(): void
     {
         foreach ($this->getImagesColumns() as $imagesColumn) {
             $this->deleteImages($imagesColumn);
