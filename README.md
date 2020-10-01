@@ -38,7 +38,7 @@ which appearing in this diagram:
 
 <img src="assets/laraimage_table.png" width="450" alt="Laraimage diagram">
 
-#####The json structure of the single image is:
+##### The json structure of the single image is:
 ```json
 {
  "disk": "public", 
@@ -46,7 +46,7 @@ which appearing in this diagram:
 }
 ```
 
-#####The json structure of the multi image is:
+##### The json structure of the multi image is:
 ```json
 {
  "id": 1093742,
@@ -474,7 +474,13 @@ return [
 You can change the default image URL and the default path also you can change the disk without warning about the old files because the disk is saved with each image
 
 ## Contributing
+
+**Logo:** designed by [Yasir Nabeel](https://github.com/YasirNabeel), Inspired by [L5Modular](https://github.com/Artem-Schander/L5Modular) logo.
+**Configuration and Testing:** Inspired by [Artem Schander](https://github.com/Artem-Schander)
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+
+Laraimage is licensed under the terms of the [MIT License](https://github.com/husseinferas/laraimage/blob/master/LICENSE)
+(See LICENSE file for details).

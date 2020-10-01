@@ -4,7 +4,6 @@
 namespace HusseinFeras\Laraimage\Traits;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 trait MultiColumnSingleImage
 {
