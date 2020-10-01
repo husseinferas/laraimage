@@ -40,7 +40,7 @@ which appearing in this diagram:
 
 ## Usage
 
-#### Single Column Single Image
+### Single Column Single Image
 
 For example Category Model
 * you need to add a nullable json column for your model
@@ -79,7 +79,7 @@ class Category extends Model
     use SingleColumnSingleImage;
 
     /*
-     * this name of your image column in the database
+     * this is the name of your image column in the database
     */
     public $imagesColumn = 'image';
     
@@ -95,7 +95,7 @@ class Category extends Model
     */
     public function imagesPath()
     {
-        return 'categories/photos/'.$this->id;
+        return 'categories/images/'.$this->id;
     }
 }
 ```
@@ -124,6 +124,195 @@ This Trait `SingleColumnSingleImage` adds these functions that used in controlle
 ```
 
 **Note:** when you delete the model using `delete()` method this trait will listen to the deleting event and delete the image files automatically
+
+
+### Single Column Multi Image
+
+For example Products Model
+* you need to add a nullable json column for your model
+
+```bash
+php artisan make:migration add_image_to_products_table 
+```
+
+* the migration file:
+```php
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('products', function (Blueprint $table) {
+            $table->json('images')->nullable();
+        });
+    }
+```
+
+* Inside the model class:
+
+```php
+<?php
+
+namespace App;
+
+use HusseinFeras\Laraimage\Traits\SingleColumnMultiImage;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    use SingleColumnMultiImage;
+    /*
+     * this is the name of your images column in the database
+    */
+    public $imagesColumn = 'images';
+       /*
+        * add your image column in the casts array
+       */
+       protected $casts = [
+           'images' => 'json'
+       ];
+   
+       /*
+        * the storage path your the images will stored
+       */
+       public function imagesPath()
+       {
+           return 'products/images/'.$this->id;
+       }
+}
+```
+
+This Trait `SingleColumnMultiImage` adds these functions that used in controller methods:
+```php
+      /*
+       * add new images using the request key
+       * the $append flag decide with you want to overwrite the existing images in the database or append to them
+       *
+       * @param  string  $requestKey
+       * @param  bool  $append
+      */
+      public function addImages($requestKey,$append = false) : void {}
+      /*
+        * delete images
+        * if $id is null this function will delete all the images in the images column
+        * if $id is the value of id of an image then this image only will delete
+        *
+        * @param  integer  $id
+        * @return  boolean
+       */
+       public function deleteImages($id = null): bool {}
+       /*
+        * get the images urls
+        *
+        * @return  array  images url | default image
+       */
+       public function getImages(): array {}
+```
+
+**Note:** when you delete the model using `delete()` method this trait will listen to the deleting event and delete the images files automatically
+
+
+
+
+### Single Column Multi Image
+
+For example Post Model
+* you need to add tow or more nullable json columns for your model
+
+```bash
+php artisan make:migration add_image_to_posts_table 
+```
+
+* the migration file:
+```php
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->json('poster')->nullable();
+            $table->json('cover')->nullable();
+        });
+    }
+```
+
+* Inside the model class:
+
+```php
+<?php
+
+namespace App;
+
+use HusseinFeras\Laraimage\Traits\MultiColumnSingleImage;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use MultiColumnSingleImage;
+    /*
+     * this is the name of your image's columns in the database
+    */
+    protected $imageColumns = ['poster','cover'];
+       /*
+        * add your image column in the casts array
+       */
+       protected $casts = [
+        'poster' => 'json',
+        'cover' =>  'json',
+       ];
+   
+       /*
+        * the storage path your the images will stored
+       */
+       public function imagesPath()
+       {
+           return 'posts/images/'.$this->id;
+       }
+}
+```
+
+This Trait `MultiColumnSingleImage` adds these functions that used in controller methods:
+```php
+     
+      /*
+       * add new image using the request key and specifying the column
+       *
+       * @param  string  $requestKey
+       * @param  string  $imageColumn
+      */
+      public function addImage($imageColumn,$requestKey): void {}
+
+       /*
+       * delete the image by specifying the column
+       *
+       * @param  string  $imageColumn
+       * @return  boolean
+      */
+       public function deleteImage($imageColumn): bool {}
+
+      /*
+       * delete all images in all image columns
+       *
+      */
+      public function deleteAllImages(): void
+
+      /*
+       * get the image url by specifying the column
+       *
+       * @param  string  $imageColumn
+       * @return  string image url | default image
+      */
+      public function getImage($imageColumn) {}
+
+```
+
+**Note:** when you delete the model using `delete()` method this trait will listen to the deleting event and delete the images files automatically
+
 
 ## Configuration
 
