@@ -38,6 +38,25 @@ which appearing in this diagram:
 
 <img src="assets/laraimage_table.png" width="450" alt="Laraimage diagram">
 
+#####The json structure of the single image is:
+```json
+{
+ "disk": "public", // the disk where image stored
+ "path": "path" // the path of the image file inside this disk
+}
+```
+
+#####The json structure of the multi image is:
+```json
+{
+ "id": 1093742, // the id of this single image 
+ "disk": "public", // the disk where image stored
+ "path": "path" // the path of the image file inside this disk
+}
+```
+
+**Note:** you can change the disk of your filesystem without effect the old files because the disk already stored with each image
+
 ## Usage
 
 ### Single Column Single Image
