@@ -41,17 +41,17 @@ which appearing in this diagram:
 #####The json structure of the single image is:
 ```json
 {
- "disk": "public", // the disk where image stored
- "path": "path" // the path of the image file inside this disk
+ "disk": "public", 
+ "path": "path"
 }
 ```
 
 #####The json structure of the multi image is:
 ```json
 {
- "id": 1093742, // the id of this single image 
- "disk": "public", // the disk where image stored
- "path": "path" // the path of the image file inside this disk
+ "id": 1093742,
+ "disk": "public", 
+ "path": "path"
 }
 ```
 
