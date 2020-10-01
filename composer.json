@@ -1,7 +1,7 @@
 {
     "name": "husseinferas/laraimage",
     "license": "MIT",
-    "description": "A Laravel package that add a simple image functionality to any Laravel model",
+    "description": "A Laravel package that adds a simple image functionality to any Laravel model",
     "keywords": ["laravel","media","image","laraimage","imageable"],
     "authors": [
         {
