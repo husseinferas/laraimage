@@ -7,5 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class SingleColumnMultiImageTest extends TestCase
 {
-
+    /** @test */
+    public function dummy_test()
+    {
+        $this->assertTrue(true);
+    }
 }
