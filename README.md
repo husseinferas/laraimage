@@ -476,7 +476,7 @@ You can change the default image URL and the default path also you can change th
 ## Contributing
 
 * **Logo:** designed by [Yasir Nabeel](https://github.com/YasirNabeel), Inspired by [L5Modular](https://github.com/Artem-Schander/L5Modular) logo.
-* **Documentation and Testing:** Inspired by [Artem Schander](https://github.com/Artem-Schander).
+* **Documentation:** Inspired by [Artem Schander](https://github.com/Artem-Schander).
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
