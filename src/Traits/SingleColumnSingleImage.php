@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 trait SingleColumnSingleImage
 {
+    protected $imageColumn = 'images';
 
     /*
      * listen to the deleting event in the model
@@ -25,19 +26,20 @@ trait SingleColumnSingleImage
      *
      * @param  string  $requestKey
     */
-    public function addImage(string $requestKey) : void
+    public function addImage(string $requestKey) : string
     {
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $filename = (string)rand() .".". request()->$requestKey->extension();
 
-        $store = Storage::disk($disk)->putFileAs($path, request()->$requestKey,$filename);
+        $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), request()->$requestKey, $filename);
         $this->update([
             $this->imageColumn => [
                 'disk' => $disk,
                 'path' => $store
             ]
         ]);
+
+        return $store;
     }
 
     /*
@@ -88,4 +90,8 @@ trait SingleColumnSingleImage
         $this->imageColumn = $imageColumn;
     }
 
+    public function getImagesPath()
+    {
+        return config('laraimage.default_path','images');
+    }
 }
