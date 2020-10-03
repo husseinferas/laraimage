@@ -111,6 +111,7 @@ class ComposerStaticInit8a299ea9fc845405604bfdbd5bf2873f
         ),
         'H' => 
         array (
+            'HusseinFeras\\Laraimage\\Test\\' => 28,
             'HusseinFeras\\Laraimage\\' => 23,
         ),
         'G' => 
@@ -323,6 +324,10 @@ class ComposerStaticInit8a299ea9fc845405604bfdbd5bf2873f
         'Illuminate\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
+        ),
+        'HusseinFeras\\Laraimage\\Test\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
         ),
         'HusseinFeras\\Laraimage\\' => 
         array (

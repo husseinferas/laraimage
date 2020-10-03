@@ -110,7 +110,7 @@ class Category extends Model
     ];
 
     /*
-     * the storage path your the images will stored
+     * the storage path where the images will stored
     */
     public function imagesPath()
     {
@@ -194,7 +194,7 @@ class Product extends Model
        ];
    
        /*
-        * the storage path your the images will stored
+        * the storage path where the images will stored
        */
        public function imagesPath()
        {
@@ -286,7 +286,7 @@ class Post extends Model
        ];
    
        /*
-        * the storage path your the images will stored
+        * the storage path where the images will stored
        */
        public function imagesPath()
        {
@@ -385,7 +385,7 @@ class Post extends Model
        ];
    
        /*
-        * the storage path your the images will stored
+        * the storage path where the images will stored
        */
        public function imagesPath()
        {
@@ -476,7 +476,7 @@ You can change the default image URL and the default path also you can change th
 ## Contributing
 
 * **Logo:** designed by [Yasir Nabeel](https://github.com/YasirNabeel), Inspired by [L5Modular](https://github.com/Artem-Schander/L5Modular) logo.
-* **Configuration and Testing:** Inspired by [Artem Schander](https://github.com/Artem-Schander)
+* **Documentation and Testing:** Inspired by [Artem Schander](https://github.com/Artem-Schander).
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
