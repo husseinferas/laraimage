@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Storage;
 
 trait SingleColumnSingleImage
 {
-
     /*
      * listen to the deleting event in the model
      * and delete the image with all the files before delete the model itself
@@ -25,19 +24,20 @@ trait SingleColumnSingleImage
      *
      * @param  string  $requestKey
     */
-    public function addImage(string $requestKey) : void
+    public function addImage(string $requestKey) : string
     {
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $filename = (string)rand() .".". request()->$requestKey->extension();
 
-        $store = Storage::disk($disk)->putFileAs($path, request()->$requestKey,$filename);
+        $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), request()->$requestKey, $filename);
         $this->update([
-            $this->imageColumn => [
+            $this->getImageColumn() => [
                 'disk' => $disk,
                 'path' => $store
             ]
         ]);
+
+        return $store;
     }
 
     /*
@@ -47,7 +47,7 @@ trait SingleColumnSingleImage
     */
     public function deleteImage(): bool
     {
-        $imageColumn = $this->imageColumn;
+        $imageColumn = $this->getImageColumn();
         try {
             Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
             $this->update([$imageColumn => null]);
@@ -64,7 +64,7 @@ trait SingleColumnSingleImage
     */
     public function getImage()
     {
-        $imageColumn = $this->imageColumn;
+        $imageColumn = $this->getImageColumn();
         try {
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
         } catch (\Exception $exception){
@@ -88,4 +88,8 @@ trait SingleColumnSingleImage
         $this->imageColumn = $imageColumn;
     }
 
+    public function getImagesPath()
+    {
+        return config('laraimage.default_path','images');
+    }
 }
