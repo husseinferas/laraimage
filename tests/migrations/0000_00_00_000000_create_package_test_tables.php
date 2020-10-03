@@ -10,8 +10,8 @@ class CreatePackageTestTables extends Migration
     {
         Schema::create('test_models', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('image')->nullable();
             $table->string('images')->nullable();
+            $table->string('custom_image_field')->nullable();
         });
     }
 }

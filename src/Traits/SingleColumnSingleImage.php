@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Storage;
 
 trait SingleColumnSingleImage
 {
-    protected $imageColumn = 'images';
-
     /*
      * listen to the deleting event in the model
      * and delete the image with all the files before delete the model itself
@@ -33,7 +31,7 @@ trait SingleColumnSingleImage
 
         $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), request()->$requestKey, $filename);
         $this->update([
-            $this->imageColumn => [
+            $this->getImageColumn() => [
                 'disk' => $disk,
                 'path' => $store
             ]
@@ -49,7 +47,7 @@ trait SingleColumnSingleImage
     */
     public function deleteImage(): bool
     {
-        $imageColumn = $this->imageColumn;
+        $imageColumn = $this->getImageColumn();
         try {
             Storage::disk($this->$imageColumn['disk'])->delete($this->$imageColumn['path']);
             $this->update([$imageColumn => null]);
@@ -66,7 +64,7 @@ trait SingleColumnSingleImage
     */
     public function getImage()
     {
-        $imageColumn = $this->imageColumn;
+        $imageColumn = $this->getImageColumn();
         try {
             return Storage::disk($this->$imageColumn['disk'])->url($this->$imageColumn['path']);
         } catch (\Exception $exception){
