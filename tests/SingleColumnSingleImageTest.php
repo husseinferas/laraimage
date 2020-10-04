@@ -105,6 +105,10 @@ class TestModel extends Model
     public $timestamps = false;
     protected $guarded = [];
 
+    protected $casts = [
+        'images' => 'json'
+    ];
+
     protected $imageColumn = 'images';
 }
 
@@ -115,6 +119,10 @@ class CustomFieldTestModel extends Model
     public $timestamps = false;
     protected $guarded = [];
     protected $table = 'test_models';
+
+    protected $casts = [
+        'custom_image_field' => 'json'
+    ];
 
     protected $imageColumn = 'custom_image_field';
 }
