@@ -28,7 +28,7 @@ trait MultiColumnMultiImage
      * @param  string  $imageColumn
      * @param  bool  $append
      */
-    public function addImages($imagesColumn,$requestKey,$append = false)
+    public function addImages($imagesColumn,$requestKey,$append = false): array
     {
         $disk = config('laraimage.disk','public');
         $images = [];
@@ -62,6 +62,7 @@ trait MultiColumnMultiImage
             }
             $this->update([$imagesColumn => $appendedImages]);
         }
+        return $appendedImages ?? $images;
     }
 
 
