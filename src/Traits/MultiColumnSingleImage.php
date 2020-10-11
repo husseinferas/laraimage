@@ -26,7 +26,7 @@ trait MultiColumnSingleImage
       * @param  string  $requestKey
       * @param  string  $imageColumn
      */
-    public function addImage($imageColumn,$requestKey): void
+    public function addImage($imageColumn,$requestKey): string
     {
         $disk = config('laraimage.disk','public');
         $filename = (string)rand() .".". request()->$requestKey->extension();
@@ -38,6 +38,7 @@ trait MultiColumnSingleImage
                 'path' => $store
             ]
         ]);
+        return $store;
     }
 
     /*

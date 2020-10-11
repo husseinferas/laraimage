@@ -11,6 +11,8 @@ class CreatePackageTestTables extends Migration
         Schema::create('test_models', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->json('images')->nullable();
+            $table->json('poster')->nullable();
+            $table->json('cover')->nullable();
             $table->json('custom_image_field')->nullable();
         });
     }
