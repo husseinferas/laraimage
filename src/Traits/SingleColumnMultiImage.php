@@ -27,18 +27,17 @@ trait SingleColumnMultiImage
      * @param  string  $requestKey
      * @param  bool  $append
     */
-    public function addImages($requestKey,$append = false) : void
+    public function addImages($requestKey,$append = false) : array
     {
-        $imagesColumn = $this->imagesColumn;
+        $imagesColumn = $this->getImagesColumn();
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $images = [];
 
         if (empty($append)) //add new images
         {
             foreach (request()->$requestKey as $image) {
                 $id = (string)rand();
-                $store = Storage::disk($disk)->putFileAs($path, $image, $id . '.' . $image->extension());
+                $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), $image, $id . '.' . $image->extension());
                 $images[] = [
                     'id' => $id,
                     'disk' => $disk,
@@ -54,7 +53,7 @@ trait SingleColumnMultiImage
             foreach (request()->$requestKey as $image)
             {
                 $id = (string)rand();
-                $store = Storage::disk($disk)->putFileAs($path, $image, $id . '.' . $image->extension());
+                $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), $image, $id . '.' . $image->extension());
                 $appendedImages[] = [
                     'id' => $id,
                     'disk' => $disk,
@@ -63,6 +62,8 @@ trait SingleColumnMultiImage
             }
             $this->update([$imagesColumn => $appendedImages]);
         }
+
+        return $appendedImages ?? $images;
     }
 
 
@@ -76,7 +77,7 @@ trait SingleColumnMultiImage
     */
     public function deleteImages($id = null): bool
     {
-        $imagesColumn = $this->imagesColumn;
+        $imagesColumn = $this->getImagesColumn();
         if (empty($this->$imagesColumn) || is_null($this->$imagesColumn)) return false;
 
         if (empty($id)) //delete all images
@@ -121,7 +122,7 @@ trait SingleColumnMultiImage
     */
     public function getImages(): array
     {
-        $imagesColumn = $this->imagesColumn;
+        $imagesColumn = $this->getImagesColumn();
         $urls = [];
         try {
             foreach ($this->$imagesColumn as $image)
@@ -141,7 +142,7 @@ trait SingleColumnMultiImage
     /**
      * @return string
      */
-    public function getImageColumn(): string
+    public function getImagesColumn(): string
     {
         return $this->imagesColumn;
     }
@@ -149,9 +150,15 @@ trait SingleColumnMultiImage
     /**
      * @param string $imagesColumn
      */
-    public function setImageColumn(string $imagesColumn): void
+    public function setImagesColumn(string $imagesColumn): void
     {
         $this->imagesColumn = $imagesColumn;
+    }
+
+
+    public function getImagesPath()
+    {
+        return config('laraimage.default_path','images');
     }
 
 }

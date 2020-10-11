@@ -29,10 +29,9 @@ trait MultiColumnSingleImage
     public function addImage($imageColumn,$requestKey): void
     {
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $filename = (string)rand() .".". request()->$requestKey->extension();
 
-        $store = Storage::disk($disk)->putFileAs($path, request()->$requestKey,$filename);
+        $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), request()->$requestKey,$filename);
         $this->update([
             $imageColumn => [
                 'disk' => $disk,
@@ -98,6 +97,12 @@ trait MultiColumnSingleImage
     public function setImageColumns(array $imageColumns): void
     {
         $this->imageColumns = $imageColumns;
+    }
+
+
+    public function getImagesPath()
+    {
+        return config('laraimage.default_path','images');
     }
 
 }

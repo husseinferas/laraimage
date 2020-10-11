@@ -15,7 +15,7 @@ class SingleColumnSingleImageTest extends TestCase
         $disk = config('laraimage.disk', 'public');
         Storage::fake($disk);
 
-        $model = new TestModel();
+        $model = new SCSIModel();
         $model->save();
 
         request()->merge(['image' => UploadedFile::fake()->image('image.jpg')]);
@@ -35,7 +35,7 @@ class SingleColumnSingleImageTest extends TestCase
         $disk = config('laraimage.disk', 'public');
         Storage::fake($disk);
 
-        $model = new TestModel();
+        $model = new SCSIModel();
         $model->save();
 
         request()->merge(['image' => UploadedFile::fake()->image('image.jpg')]);
@@ -58,7 +58,7 @@ class SingleColumnSingleImageTest extends TestCase
         $disk = config('laraimage.disk', 'public');
         Storage::fake($disk);
 
-        $model = new TestModel();
+        $model = new SCSIModel();
         $model->save();
 
         request()->merge(['image' => UploadedFile::fake()->image('image.jpg')]);
@@ -80,7 +80,7 @@ class SingleColumnSingleImageTest extends TestCase
         $disk = config('laraimage.disk', 'public');
         Storage::fake($disk);
 
-        $model = new CustomFieldTestModel();
+        $model = new CustomFieldSCSIModel();
         $model->save();
 
         $field = $model->getImageColumn();
@@ -98,12 +98,13 @@ class SingleColumnSingleImageTest extends TestCase
     }
 }
 
-class TestModel extends Model
+class SCSIModel extends Model
 {
     use SingleColumnSingleImage;
 
     public $timestamps = false;
     protected $guarded = [];
+    protected $table = 'test_models';
 
     protected $casts = [
         'images' => 'json'
@@ -112,7 +113,7 @@ class TestModel extends Model
     protected $imageColumn = 'images';
 }
 
-class CustomFieldTestModel extends Model
+class CustomFieldSCSIModel extends Model
 {
     use SingleColumnSingleImage;
 

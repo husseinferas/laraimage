@@ -31,14 +31,13 @@ trait MultiColumnMultiImage
     public function addImages($imagesColumn,$requestKey,$append = false)
     {
         $disk = config('laraimage.disk','public');
-        $path = $this->imagesPath() ?? config('laraimage.default_path','images');
         $images = [];
 
         if (empty($append)) //add new images
         {
             foreach (request()->$requestKey as $image) {
                 $id = (string)rand();
-                $store = Storage::disk($disk)->putFileAs($path, $image, $id . '.' . $image->extension());
+                $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), $image, $id . '.' . $image->extension());
                 $images[] = [
                     'id' => $id,
                     'disk' => $disk,
@@ -54,7 +53,7 @@ trait MultiColumnMultiImage
             foreach (request()->$requestKey as $image)
             {
                 $id = (string)rand();
-                $store = Storage::disk($disk)->putFileAs($path, $image, $id . '.' . $image->extension());
+                $store = Storage::disk($disk)->putFileAs($this->getImagesPath(), $image, $id . '.' . $image->extension());
                 $appendedImages[] = [
                     'id' => $id,
                     'disk' => $disk,
@@ -158,6 +157,12 @@ trait MultiColumnMultiImage
     public function setImagesColumns(array $imagesColumns): void
     {
         $this->imageColumns = $imagesColumns;
+    }
+
+
+    public function getImagesPath()
+    {
+        return config('laraimage.default_path','images');
     }
 
 }
