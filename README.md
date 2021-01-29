@@ -6,9 +6,18 @@
 
 ---
 
-## Documentation
+## Introduction
 
-Check out the full documentation at [Laraimage](https://laraimage.husseinferas.com/)
+Laraimage served four use cases when using images in web applications and backend services:
+* Single Column Single Image
+* Single Column Multi Image
+* Multi Column Single Image
+* Multi Column Multi Image
+
+which appearing in this diagram:   
+
+<img src="assets/laraimage_table.png" width="450" alt="Laraimage diagram">
+
 
 ## Installation
 
@@ -20,17 +29,11 @@ composer require husseinferas/laraimage
 ```
 
 
-## Getting started
+## Documentation
 
-Laraimage served four use cases when using images in web applications and backend services:
-* Single Column Single Image
-* Single Column Multi Image
-* Multi Column Single Image
-* Multi Column Multi Image
+Check out the full documentation at [Laraimage](https://laraimage.husseinferas.com/)
 
-which appearing in this diagram:   
-
-<img src="assets/laraimage_table.png" width="450" alt="Laraimage diagram">
+<br>
 
 ---
 
