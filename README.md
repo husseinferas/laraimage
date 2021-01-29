@@ -375,7 +375,7 @@ class Post extends Model
     /*
      * this is the name of your image's columns in the database
     */
-    protected $imageColumns = ['slider','images'];
+    protected $imagesColumns = ['slider','images'];
        /*
         * add your image column in the casts array
        */
