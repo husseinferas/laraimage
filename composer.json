@@ -6,7 +6,7 @@
     "authors": [
         {
             "name": "Hussein Feras",
-            "email": "husseinferas12@gmail.com"
+            "email": "me@husseinferas.com"
         }
     ],
     "minimum-stability": "stable",
@@ -29,8 +29,8 @@
     },
     "require": {
         "php": ">=7.2",
-        "illuminate/database": "^7.0|^8.0",
-        "illuminate/support": "^7.0|^8.0"
+        "illuminate/database": "^8.0",
+        "illuminate/support": "^8.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.3",
